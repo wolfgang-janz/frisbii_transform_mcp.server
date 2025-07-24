@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "frisbii-transform-mcp"
+version = "0.1.0"
+description = "MCP server for Frisbii Transform subscription and billing API"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "fastmcp",
+    "httpx",
+    "pydantic",
+    "authlib",
+    "requests-oauthlib",
+]
+
+[project.scripts]
+frisbii-transform-mcp = "frisbii_transform_mcp.server:main"

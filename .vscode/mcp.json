@@ -1,0 +1,19 @@
+{
+  "servers": {
+    "frisbii-transform": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["-m", "frisbii_transform_mcp.server"],
+      "env": {
+        "FRISBII_BASE_URL": "https://sandbox.billwerk.com",
+        "FRISBII_API_KEY": "",
+        "FRISBII_OAUTH2_CLIENT_ID": "",
+        "FRISBII_OAUTH2_CLIENT_SECRET": "",
+        "FRISBII_OAUTH2_TOKEN_URL": "https://sandbox.billwerk.com/oauth/token",
+        "FRISBII_OAUTH2_SCOPE": "",
+        "FRISBII_TOKEN_STORAGE": "frisbii_oauth_token.json",
+        "FRISBII_LEGAL_ENTITY_ID": "",  
+      }
+    }
+  }
+}
