@@ -15,84 +15,85 @@ This MCP server provides tools for:
 - **Discount Management**: Manage discount subscriptions
 - **Plan Management**: Access plan groups, plans, and plan variants
 - **Report Generation**: Generate various business reports
+- **Webhook Management**: Webhook configuration and event monitoring
+- **OAuth2 Management**: Built-in authentication status and token management tools
 
 ## Installation
 
-1. Install the required dependencies:
 ```bash
 pip install -e .
 ```
 
-2. Set up your Frisbii Transform API credentials as environment variables:
+## Configuration
 
-**Required Configuration**
-```bash
-export FRISBII_LEGAL_ENTITY_ID="your_legal_entity_id"  # Required for all requests
-```
+Add this server to your MCP client configuration (e.g., Claude Desktop). Choose one of the authentication methods below:
 
-**Option 1: Bearer Token Authentication (Simple)**
-```bash
-export FRISBII_API_KEY="your_api_key"
-export FRISBII_BASE_URL="https://sandbox.billwerk.com"  # or https://app.billwerk.com for production
-```
-
-**Option 2: OAuth2 Authentication (Recommended)**
-```bash
-export FRISBII_BASE_URL="https://sandbox.billwerk.com"  # or https://app.billwerk.com for production
-export FRISBII_OAUTH2_CLIENT_ID="your_client_id"
-export FRISBII_OAUTH2_CLIENT_SECRET="your_client_secret"
-export FRISBII_OAUTH2_TOKEN_URL="https://sandbox.billwerk.com/oauth/token"
-export FRISBII_OAUTH2_SCOPE="api"
-```
-
-For detailed OAuth2 setup instructions, see [OAUTH2_SETUP.md](OAUTH2_SETUP.md).
-
-## Usage
-
-Add this server to your MCP client configuration:
+### OAuth2 Authentication (Recommended)
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "frisbii-transform": {
-      "type": "stdio",
       "command": "python",
-      "args": ["-m", "frisbii_transform_mcp.server"]
+      "args": ["-m", "frisbii_transform_mcp.server"],
+      "env": {
+        "FRISBII_BASE_URL": "https://app.billwerk.com",
+        "FRISBII_OAUTH2_CLIENT_ID": "your_client_id",
+        "FRISBII_OAUTH2_CLIENT_SECRET": "your_client_secret",
+        "FRISBII_OAUTH2_TOKEN_URL": "https://app.billwerk.com/oauth/token",
+        "FRISBII_OAUTH2_SCOPE": "api"
+      }
     }
   }
 }
 ```
 
-## API Tools
-
-The server provides comprehensive tools for all major Frisbii Transform API endpoints including:
-
-- Customer operations (CRUD)
-- Contract lifecycle management
-- Subscription management
-- Usage tracking and billing
-- Invoice and payment handling
-- Plan and pricing management
-- Reporting and analytics
-
-## Authentication
-
-This server supports two authentication methods and requires a legal entity ID for all requests:
-
-### Required Configuration
-The `FRISBII_LEGAL_ENTITY_ID` environment variable must be set and will be included as the `x-selected-legal-entity-id` header in all API requests.
+**Setup Requirements:**
+1. Create OAuth2 client credentials in your Billwerk+ Transform settings
+2. **Important:** Use dedicated client credentials - avoid sharing Admin UI credentials
+3. This method provides automatic token management and refresh capabilities
 
 ### Bearer Token Authentication
-Use Bearer token authentication with the Frisbii Transform API by setting the `FRISBII_API_KEY` environment variable with your valid API token.
 
-### OAuth2 Authentication (Recommended)
-Use OAuth2 client credentials flow by setting the appropriate OAuth2 environment variables. This method provides better security and automatic token management.
+```json
+{
+  "mcpServers": {
+    "frisbii-transform": {
+      "command": "python",
+      "args": ["-m", "frisbii_transform_mcp.server"],
+      "env": {
+        "FRISBII_BASE_URL": "https://app.billwerk.com",
+        "FRISBII_API_KEY": "your_api_key"
+      }
+    }
+  }
+}
+```
 
-The server automatically detects which authentication method to use based on the environment variables provided. See [OAUTH2_SETUP.md](OAUTH2_SETUP.md) for detailed OAuth2 configuration instructions.
+### Optional: Legal Entity ID
 
-### OAuth2 Management Tools
+For multi-entity access, add the legal entity ID to your environment configuration:
+
+```json
+"env": {
+  "FRISBII_LEGAL_ENTITY_ID": "your_legal_entity_id",
+  // ... other environment variables
+}
+```
+
+**Note:** The `FRISBII_LEGAL_ENTITY_ID` is optional. Most single-entity Billwerk customers can omit this setting.
+
+### Environment Endpoints
+
+- **Production:** `https://app.billwerk.com`
+- **Sandbox:** `https://sandbox.billwerk.com`
+
+For detailed OAuth2 setup instructions, see [OAUTH2_SETUP.md](OAUTH2_SETUP.md).
+
+## OAuth2 Management Tools
+
 The server includes built-in tools for OAuth2 management:
-- `oauth2_status`: Check authentication status, token validity, and legal entity ID configuration
+- `oauth2_status`: Check authentication status, token validity, and configuration
 - `oauth2_refresh_token`: Force refresh of OAuth2 tokens
 - `oauth2_clear_token`: Clear stored OAuth2 tokens
 

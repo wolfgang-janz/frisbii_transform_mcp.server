@@ -47,10 +47,9 @@ elif API_KEY:
 else:
     logger.warning("No authentication method configured. Please set either FRISBII_API_KEY or OAuth2 credentials.")
 
-# Legal Entity ID validation
+# Legal Entity ID validation - now optional
 if not LEGAL_ENTITY_ID:
-    logger.error("FRISBII_LEGAL_ENTITY_ID environment variable is required but not set.")
-    raise ValueError("FRISBII_LEGAL_ENTITY_ID environment variable must be configured")
+    logger.warning("FRISBII_LEGAL_ENTITY_ID not set - x-selected-legal-entity-id header will be omitted from requests")
 
 # Token storage functions
 def save_token(token: Dict[str, Any]) -> None:
@@ -125,9 +124,12 @@ def get_client() -> httpx.Client:
     """Get configured HTTP client with authentication headers."""
     headers = {
         "Content-Type": "application/json",
-        "Accept": "application/json",
-        "x-selected-legal-entity-id": LEGAL_ENTITY_ID
+        "Accept": "application/json"
     }
+    
+    # Add legal entity ID header only if provided
+    if LEGAL_ENTITY_ID:
+        headers["x-selected-legal-entity-id"] = LEGAL_ENTITY_ID
     
     # Choose authentication method
     if auth_method == "oauth2":
